@@ -1,0 +1,6 @@
+package com.goodee.webdb.vo;
+
+
+public class Student {
+	
+}

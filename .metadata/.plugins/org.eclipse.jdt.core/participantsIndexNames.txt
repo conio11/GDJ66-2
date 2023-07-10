@@ -1,0 +1,9 @@
+INDEX VERSION 1.134
+D:\KRIBTRY\IT\stsworkspace\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\3591694004.index
+\web1\src\main\java
+D:\KRIBTRY\IT\stsworkspace\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\2832113329.index
+\webdb\src\main\java
+D:\KRIBTRY\IT\stsworkspace\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\324691660.index
+\web1\src\main\java
+D:\KRIBTRY\IT\stsworkspace\.metadata\.plugins\org.eclipse.jst.jsp.core\jspsearch\1303323492.index
+\web\src\main\java

@@ -1,0 +1,11 @@
+package com.goodee.webdb.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
+import com.goodee.webdb.service.StudentService;
+
+@Controller
+public class StudentController {
+	@Autowired private StudentService studentService; // new 연산자 사용 X // 주입받기 위해 @Autowired
+}

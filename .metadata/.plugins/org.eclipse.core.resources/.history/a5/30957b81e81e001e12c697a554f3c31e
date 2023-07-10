@@ -1,0 +1,7 @@
+package com.goodee.webdb.service;
+
+import com.goodee.webdb.mapper.StudentMapper;
+
+public class StudentService {
+	private StudentMapper studentMapper; // 
+}

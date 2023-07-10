@@ -1,0 +1,10 @@
+package com.goodee.webdb.controller;
+
+import org.springframework.stereotype.Controller;
+
+import com.goodee.webdb.service.StudentService;
+
+@Controller
+public class StudentController {
+	private StudentService studentService;
+}

@@ -1,0 +1,5 @@
+package com.goodee.webdb.controller;
+
+public class HelloController {
+
+}

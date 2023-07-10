@@ -1,0 +1,7 @@
+package com.goodee.webdb.service;
+
+import com.goodee.webdb.mapper.StudentMapper;
+
+public class StudentService {
+	private StudentMapper studentMapper; // new() 호출할 클래스 만들어지지 않음 -> 부모 타입 사용
+}

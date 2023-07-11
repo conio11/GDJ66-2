@@ -10,19 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import com.goodee.webdb.service.StudentService;
 import com.goodee.webdb.vo.Student;
 
-
-@Controller
+@Controller 
 public class StudentController {
-	@Autowired private StudentService studentService; // new 연산자 사용 X // 주입받기 위해 @Autowired
+	@Autowired private StudentService studentService; // new 연산자 사용 X // 주입받기 위해 @Autowired 사용
 	
-	@GetMapping("/getStudentAll")
+	@GetMapping("/getStudentAll") // RequestMapping(Method=RequestMethod.GET)과 같은 역할. /getStudentAll로 들어오는 요청을 모두 처리
 	public String getStudentAll(Model model) {
 		List<Student> list = studentService.getStudentAll();
 		model.addAttribute("list", list); // request.setAttribute();
 		
 		System.out.println("%%%%%%%%%%%%% " + list.size());
 		
-		return "getStudentAll"; // forward
-		
+		return "getStudentAll"; // forward		
 	}
 }

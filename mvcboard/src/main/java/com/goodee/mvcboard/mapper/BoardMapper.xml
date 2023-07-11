@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.goodee.mvcboard.mapper.BoardMapper">
+	<select id="selectLocalNameList" resultType="java.util.Map"> <!-- id: BoardMapper.java 내 메소드명, resultType: 쿼리 결과를 매핑할 자바 객체 타입 지정 -->
+		SELECT local_name localName, COUNT(*) cnt FROM board GROUP BY local_name
+	</select>
+	<!-- alias 없을 경우 setter, getter 호출 불가 -->
+	
+	<select id="selectBoardListByPage" parameterType="java.util.Map" resultType="com.goodee.mvcboard.vo.Board">
+		SELECT 
+			board_no boardNo,
+			local_name localName, 
+			board_title boardTitle, 
+			member_id memberId,
+			createdate
+		FROM board
+		ORDER BY createdate DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<select id="selectBoardCnt" resultType="int">
+		SELECT COUNT(*) FROM board
+	</select>
+</mapper>

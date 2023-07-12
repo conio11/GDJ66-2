@@ -10,9 +10,10 @@
 	</head>
 	<body>
 		<h1>게시판</h1>
+		<a href="/board/addBoard">게시글 입력</a>
 		<div>
 			<c:forEach var="m" items="${localNameList}"> 
-				<a href="">${m.localName}(${m.cnt})</a>
+				<a href="/board/boardList?localName=${m.localName}">${m.localName}(${m.cnt})</a> <!-- a href="/board/boardList/${m.localName}" 와 같이 작성 가능 -->
 			</c:forEach>
 		</div>
 		
@@ -28,7 +29,6 @@
 					<td>${b.localName}</td>
 					<td>
 						<a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a>
-					
 					</td>
 					<td>${b.memberId}</td>
 					<td>${b.createdate}</td>
@@ -45,8 +45,5 @@
 			<c:if test="${currentPage < lastPage}">
 				<a href="/board/boardList?currentPage=${currentPage + 1}">다음</a>
 			</c:if>
-			
-			
-
 	</body>
 </html>

@@ -17,7 +17,33 @@ public class BoardService {
 	@Autowired
 	private BoardMapper boardMapper;
 	
-	public Map<String, Object> getBoardList(int currentPage, int rowPerPage) {
+	/*
+	public void addBoard(Board board) {
+		// return 
+		boardMapper.insertBoard(board);
+	}
+	
+	*/
+	
+	public int addBoard(Board board) {
+		return boardMapper.insertBoard(board);
+	}
+	
+	public int removeBoard(Board board) {
+		return boardMapper.removeBoard(board);
+	}
+	
+	public int modifyBoard(Board board) {
+		return boardMapper.modifyBoard(board);
+	}
+	
+	public Board selectBoardOne(int boardNo) {
+		Board board = boardMapper.selectBoardOne(boardNo);
+		return board; 
+		
+	}
+	
+	public Map<String, Object> getBoardList(int currentPage, int rowPerPage, String localName) {
 		
 		// service layer 역할 1: controller가 넘겨준 매개값을 dao의 매개값에 맞게 가공 
 		int beginRow = (currentPage - 1) * rowPerPage;
@@ -28,6 +54,7 @@ public class BoardService {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("beginRow", beginRow);
 		paramMap.put("rowPerPage", rowPerPage);
+		paramMap.put("localName", localName);
 		
 		// 반환값 2
 		List<Board> boardList = boardMapper.selectBoardListByPage(paramMap);

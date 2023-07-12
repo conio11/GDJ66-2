@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.goodee.mvcboard.vo.Board;
 
@@ -15,9 +16,24 @@ public interface BoardMapper {
 	// myBatis 메소드는 매개값을 하나만 허용
 	// param: Map<String, Object> map -> int beginRow, int rowPerPage
 	List<Board> selectBoardListByPage(Map<String, Object> map); 
-	
-	
+
 	// 전체 행 개수
 	int selectBoardCnt();
+	
+	// 게시글 상세정보
+	Board selectBoardOne(int boardNo);
+	
+	// void insertBoard(Board board); 
+	
+	// 게시글 입력
+	int insertBoard(Board board);
+	
+	// 게시글 수정
+	int modifyBoard(Board board);
+	
+	// 게시글 삭제
+	int removeBoard(Board board);
+	
+	
 	
 }

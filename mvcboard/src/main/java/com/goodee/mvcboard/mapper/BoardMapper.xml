@@ -6,6 +6,7 @@
 	</select>
 	<!-- alias 없을 경우 setter, getter 호출 불가 -->
 	
+	<!-- 전체 리스트 -->
 	<select id="selectBoardListByPage" parameterType="java.util.Map" resultType="com.goodee.mvcboard.vo.Board">
 		SELECT 
 			board_no boardNo,
@@ -14,11 +15,44 @@
 			member_id memberId,
 			createdate
 		FROM board
+		<where>
+			<if test="localName != null &amp;&amp; localName != ''"> <!-- localName이 null도 공백도 아니면 where 실행 -->
+				local_name = #{localName}
+			</if>
+		</where>
+		<!-- WHERE local_name = #{localName} -->
 		ORDER BY createdate DESC
 		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+	
+	<!-- 상세정보 -->
+	<select id="selectBoardOne" parameterType="com.goodee.mvcboard.vo.Board" resultType="com.goodee.mvcboard.vo.Board">
+		SELECT board_no boardNo, local_name localName, board_title boardTitle, board_content boardContent, member_id memberId, createdate, updatedate FROM board
+		WHERE board_no = #{boardNo}
 	</select>
 	
 	<select id="selectBoardCnt" resultType="int">
 		SELECT COUNT(*) FROM board
 	</select>
+	
+	<!-- insert 시 <insert> 사용  -->
+	<insert id="insertBoard" parameterType="com.goodee.mvcboard.vo.Board">
+		INSERT INTO board(local_name, board_title, board_content, member_id, createdate, updatedate) 
+		VALUES(#{localName}, #{boardTitle}, #{boardContent}, #{memberId}, NOW(), NOW())
+	</insert>
+	
+	<delete id="removeBoard" parameterType="com.goodee.mvcboard.vo.Board">
+		DELETE FROM board
+		WHERE board_no = #{boardNo} AND member_id = #{memberId} 
+	</delete>
+	
+	<update id="modifyBoard" parameterType="com.goodee.mvcboard.vo.Board">
+		UPDATE board
+		SET board_title = #{boardTitle},
+			board_content = #{boardContent},
+			local_name = #{localName},
+			member_id = #{memberId},
+			updatedate = NOW() 
+		WHERE board_no = #{boardNo}
+	</update>
 </mapper>

@@ -23,10 +23,6 @@ public class LoginController {
 		// model.addAttribute(memberPw);
 		session.setAttribute("", "");
 		
-		
-		
-		
-		
 		// 동일한 이름일 경우 (name="memberId") 생략 가능
 		
 		

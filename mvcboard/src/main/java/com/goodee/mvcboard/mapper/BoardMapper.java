@@ -14,7 +14,7 @@ public interface BoardMapper {
 	List<Map<String, Object>> selectLocalNameList();
 	
 	// myBatis 메소드는 매개값을 하나만 허용
-	// param: Map<String, Object> map -> int beginRow, int rowPerPage
+	// param: Map<String, Object> map -> int beginRow, int rowPerPage, (localName)
 	List<Board> selectBoardListByPage(Map<String, Object> map); 
 
 	// 전체 행 개수
@@ -23,8 +23,9 @@ public interface BoardMapper {
 	// 게시글 상세정보
 	Board selectBoardOne(int boardNo);
 	
-	// void insertBoard(Board board); 
+	// 지역명 리스트로 가져오기
 	
+		
 	// 게시글 입력
 	int insertBoard(Board board);
 	
@@ -33,7 +34,4 @@ public interface BoardMapper {
 	
 	// 게시글 삭제
 	int removeBoard(Board board);
-	
-	
-	
 }

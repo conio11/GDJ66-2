@@ -7,7 +7,7 @@
 	<!-- alias 없을 경우 setter, getter 호출 불가 -->
 	
 	<!-- 전체 리스트 -->
-	<select id="selectBoardListByPage" parameterType="java.util.Map" resultType="com.goodee.mvcboard.vo.Board">
+	<select id="selectBoardListByPage" parameterType="java.util.Map" resultType="com.goodee.mvcboard.vo.Board"> <!-- list 내에 들어가는 객체의 타입 -->
 		SELECT 
 			board_no boardNo,
 			local_name localName, 
@@ -29,6 +29,12 @@
 	<select id="selectBoardOne" parameterType="com.goodee.mvcboard.vo.Board" resultType="com.goodee.mvcboard.vo.Board">
 		SELECT board_no boardNo, local_name localName, board_title boardTitle, board_content boardContent, member_id memberId, createdate, updatedate FROM board
 		WHERE board_no = #{boardNo}
+		
+		
+		<!-- SELECT b.board_no boardNo, b.local_name localName, b.board_title boardTitle, b.board_content boardContent, bf.origin_filename originFilename, b.member_id memberId, b.createdate, b.updatedate 
+		FROM board b INNER JOIN boardfile bf ON b.board_no = bf.board_no
+		WHERE b.board_no = #{boardNo} -->
+	 
 	</select>
 	
 	<select id="selectBoardCnt" resultType="int">
@@ -37,6 +43,9 @@
 	
 	<!-- insert 시 <insert> 사용  -->
 	<insert id="insertBoard" parameterType="com.goodee.mvcboard.vo.Board">
+		<selectKey order="AFTER" keyProperty="boardNo" resultType="int"> <!-- AFTER: 키가 반환되고 난 뒤에 실행 -->
+			SELECT last_insert_id() <!-- 키값 반환  -->
+		</selectKey>
 		INSERT INTO board(local_name, board_title, board_content, member_id, createdate, updatedate) 
 		VALUES(#{localName}, #{boardTitle}, #{boardContent}, #{memberId}, NOW(), NOW())
 	</insert>

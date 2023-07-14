@@ -30,6 +30,13 @@ public class BoardService {
 	@Autowired 
 	BoardfileMapper boardfileMapper;
 	
+	// REST API chart 호출
+	public List<Map<String, Object>> getLocalNameList() {
+		return boardMapper.selectLocalNameList();
+	}
+	
+	
+	
 	public int addBoard(Board board, String path) {
 		int row = boardMapper.insertBoard(board);
 		
@@ -45,7 +52,7 @@ public class BoardService {
 				bf.setOriginFilename(mf.getOriginalFilename()); // 파일 원본 이름
 				bf.setFilesize(mf.getSize()); // 파일 사이즈
 				bf.setFiletype(mf.getContentType()); // 파일 타입(MIME)
-				// 저장될 파일 이름
+				
 				// 확장자
 				String ext = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf(".")); // 마지막으로 나타나는 . 의 위치
 				

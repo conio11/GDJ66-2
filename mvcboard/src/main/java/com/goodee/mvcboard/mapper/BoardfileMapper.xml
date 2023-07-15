@@ -17,8 +17,22 @@
 		)
 	</insert>
 	
-	<select id="selectBoardfileOne" parameterType="int" resultType="com.goodee.mvcboard.vo.Boardfile"> <!-- list 내에 들어가는 객체의 타입 -->
+	<select id="selectBoardfile" parameterType="int" resultType="com.goodee.mvcboard.vo.Boardfile"> <!-- list 내에 들어가는 객체의 타입 -->
 		SELECT boardfile_no boardfileNo, origin_filename originFilename, save_filename saveFilename, filetype, filesize 
 		FROM boardfile WHERE board_no = #{boardNo}  
+	</select>
+	
+	<delete id="removeBoardfile" parameterType="int">
+		DELETE FROM boardfile
+		WHERE board_no = #{boardNo}
+	</delete>
+	
+	<delete id="removeBoardfileOne" parameterType="int">
+		DELETE FROM boardfile
+		WHERE boardfile_no = #{boardfileNo}
+	</delete>
+	<select id="selectBoardfileCnt" parameterType="int"> <!-- 단일 값을 반환하는 쿼리는 resultType 생략 가능  -->
+		SELECT COUNT(*) FROM boardfile
+		WHERE board_no = #{boardNo}
 	</select>
 </mapper>

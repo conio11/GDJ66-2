@@ -24,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service // transaction 어노테이션과 직접 관련 X
 @Transactional
 public class BoardService {
+	static final String CYAN = "\u001B[36m";
+	static final String RESET = "\u001B[0m";
+	
 	@Autowired
 	private BoardMapper boardMapper;
 	
@@ -75,9 +78,9 @@ public class BoardService {
 					throw new RuntimeException();
 				} 	
 				
-				log.debug("\u001B[32m" + mf.getOriginalFilename() + "\u001B[0m");
-				log.debug("\u001B[32m" + mf.getSize() + "\u001B[0m");
-				log.debug("\u001B[32m" + mf.getContentType() + "\u001B[0m");
+				log.debug(CYAN + mf.getOriginalFilename() + RESET);
+				log.debug(CYAN + mf.getSize() + RESET);
+				log.debug(CYAN + mf.getContentType() + RESET);
 				}			
 			}
 		}
@@ -85,12 +88,82 @@ public class BoardService {
 		return row;
 	}
 	
-	public int removeBoard(Board board) {
-		return boardMapper.removeBoard(board);
+	public int removeBoard(Board board, String path) {
+		// 첨부파일 삭제
+		List<Boardfile> boardfileList = boardfileMapper.selectBoardfile(board.getBoardNo());
+		
+		for (Boardfile bf : boardfileList) {
+			File f = new File(path + bf.getSaveFilename());
+			// 파일이 있을 경우 삭제
+			if (f.exists()) {
+				f.delete();
+				log.debug(CYAN + "파일 삭제(BoardService-removeBoard)" + RESET);
+			}
+		}
+		int boardfileCnt = boardfileMapper.selectBoardfileCnt(board.getBoardNo());
+		int row = boardfileMapper.removeBoardfile(board.getBoardNo());
+		log.debug(CYAN + row + " <-- row(BoardService-removeBoard)" + RESET);
+		if (boardfileCnt == row) {
+			row = boardMapper.removeBoard(board);
+		}
+		
+		return row;
 	}
 	
-	public int modifyBoard(Board board) {
-		return boardMapper.modifyBoard(board);
+	public int removeBoardfileOne(int boardfileNo) {
+		int row = boardfileMapper.removeBoardfileOne(boardfileNo);
+		log.debug(CYAN + row + " <-- row(BoardService-removeBoardfileOne)" + RESET);
+		
+		return row;
+	}
+	
+	
+	public int modifyBoard(Board board, String path) {
+		int row = boardMapper.modifyBoard(board);
+		log.debug(CYAN + row + " <-- row(BoardService-modifyBoard)" + RESET);
+		if (row == 1) { // board가 수정되었을 경우
+			int boardNo = board.getBoardNo();
+			List<MultipartFile> fileList = board.getMultipartFile();
+			log.debug(CYAN + fileList.size() + RESET); // 첨부파일 개수 확인
+			// 첨부파일이 한 개라도 존재할 경우
+			if (fileList != null && fileList.size() > 0) {
+				for (MultipartFile mf : fileList) {
+					if (mf.getSize() > 0) {
+						// 확장자
+						String ext = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf("."));
+						// 새 파일명
+						String newFilename = UUID.randomUUID().toString().replace("-", "") + ext; // - 를 공백으로 바꿈
+					
+						Boardfile bf = new Boardfile();
+						bf.setBoardNo(boardNo); // 부모 키 값
+						bf.setOriginFilename(mf.getOriginalFilename()); // 원본 파일 이름
+						bf.setOriginFilename(newFilename); // 저장 파일 이름
+						bf.setFiletype(mf.getContentType());
+						bf.setFilesize(mf.getSize());
+						
+						// 테이블에 저장
+						boardfileMapper.insertBoardfile(bf);
+						
+						// 파일 저장 (저장 위치 필요 -> path)
+						File f = new File(path + bf.getSaveFilename());
+						// 빈 파일에 첨부된 파일의 스트림을 주입
+						try {
+							mf.transferTo(f);
+							
+						} catch (IllegalStateException | IOException e) {
+							e.printStackTrace();
+							// 트랜잭션 작동을 위해 예외(try-catch를 강요하지 않는 예외 -> ex: RuntimeException) 발생 필요
+							throw new RuntimeException();
+						}
+						
+						
+					}
+				}
+			}
+		}
+		
+		// return boardMapper.modifyBoard(board);
+	    return row;
 	}
 	
 	/*
@@ -98,11 +171,15 @@ public class BoardService {
 	 * boardMapper.selectBoardOne(boardNo); return board; }
 	 */
 	
-	public Map<String, Object> selectBoardOne(int boardNo) {
+	public Map<String, Object> getBoardOne(int boardNo) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("board", boardMapper.selectBoardOne(boardNo));
-		map.put("boardfiles", boardfileMapper.selectBoardfileOne(boardNo));
+		map.put("boardfiles", boardfileMapper.selectBoardfile(boardNo));
 		return map;
+	}
+	
+	public List<Boardfile> getBoardfile(int boardNo){
+		return boardfileMapper.selectBoardfile(boardNo);
 	}
 	
 	public Map<String, Object> getBoardList(int currentPage, int rowPerPage, String localName) {

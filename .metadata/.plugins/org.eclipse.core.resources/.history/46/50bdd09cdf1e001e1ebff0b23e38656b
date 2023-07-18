@@ -1,4 +1,0 @@
-# 톰캣 서버 설정
-server.port=8
-# 컨텍스트 이름 설정 (기본값은 root("/"))
-server.servlet.context-path=/webdb

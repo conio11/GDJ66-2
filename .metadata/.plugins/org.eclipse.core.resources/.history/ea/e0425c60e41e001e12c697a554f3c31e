@@ -1,6 +1,0 @@
-package mapper;
-
-@Mapper
-public interface StudentMapper {
-
-}

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>excelDownload</title>
+		  jquery 
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		
+		[CDN 설정 실시] 
+    	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.5/xlsx.full.min.js"></script>
+   		<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+	</head>
+	<body>
+		<button id="excelBtn">엑셀 다운로드</button>
+		
+		<script>
+			let arr = [];
+			$("#excelBtn").click(function() {
+				// alert("excelBtn"); 디버깅
+				$.ajax({
+					async : false,
+					url : '/excel',
+					type: 'GET',
+					// data: json -> sheet.js 자료구조 -> 다운로드
+					success : function(data) { 
+						$(data).each(function(index, item) {
+							arr.push([item.name, item.age]);
+							 /*
+					 		    let row = [];
+								row.push(item.name);
+								row.push(item.age);
+								row.push(row);
+							 */
+
+						}); 
+					}
+					// {name: "루피", age:17}, {name: "나미", age: 19}
+					
+				});
+				// 1) 엑셀 파일 
+				let book = XLSX.utils.book_new(); // 엑셀 파일
+				// 2) 1) 안에 시트 이름 생성
+				book.SheetNames.push('one');
+				
+				// 3) 시트 생성
+				let sheet = XLSX.utils.aoa_to_sheet(arr); // book과 sheet는 별개
+				
+				// 2) 와 3) 을 연결
+				book.Sheets['one'] = sheet;
+				
+				// 4) boot -> 기계어 파일로
+				let source = XLSX.write(book, {bookType: 'xlsx', type: 'binary'});
+				
+				// 다운로드
+				// 1) source 크기의 빈 스트림 생성
+				let buf = new ArrayBuffer(source.length);
+				
+				// 2) 8비트 배열로 버퍼 랩핑 -> 1byte씩 옮기기 위해
+				let buf2 = new Uint8Array(buf);
+				
+				for (let i = 0; i < source.length; i++) {
+					buf2[i] = source.charCodeAt(i) & 0xFF;
+				}
+				
+				let b = new Blob([buf], {type: "application/octet-stream"});
+				saveAs(b, "test.xlsx");
+			});	
+			
+		</script>
+	</body>
+</html>
+
+<!--<body>
+   <button id="excelBtn">엑셀 다운로드</button>
+   <script>
+      $('#excelBtn').click(function(){
+         $.ajax({
+            url: "/excel",
+            type: 'GET',
+            success: function(data){
+               let arr = [];
+               $(data).each(function(index, item){
+                  arr.push([item.name, item.age]);
+               });
+               
+               // 엑셀 파일 생성
+               let book = XLSX.utils.book_new();
+               let sheet = XLSX.utils.aoa_to_sheet(arr);
+               book.SheetNames.push('one');
+               book.Sheets['one'] = sheet;
+               
+               // 엑셀 파일을 기계어(binary file) 파일로 바꾸기
+               let binaryData = XLSX.write(book, { bookType: 'xlsx', type: 'binary' });
+               
+               /* FileSaver를 사용하여 다운로드 */
+               let buffer = new ArrayBuffer(binaryData.length);
+               let view = new Uint8Array(buffer);
+               
+               for (let i = 0; i < binaryData.length; i++) {
+                  view[i] = binaryData.charCodeAt(i) & 0xFF;
+               }
+               
+               let blob = new Blob([buffer], { type: "application/octet-stream" });
+               saveAs(blob, "test.xlsx");
+            }
+         });
+      });
+   </script>
+</body>-->
+
+<!--<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+    JQuery 
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    excel api : SheetJS 
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.5/xlsx.full.min.js"></script>
+    file download api : FileSaver savaAs 
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+</head>
+<body>
+   <button id="excelBtn">엑셀 다운로드</button>
+   
+   <script>
+      let arr = []; // 빈 배열 생성
+      $('#excelBtn').click(function() {
+         // alert('excelBtn');
+         $.ajax({
+            async : false, // data를 받아오기 전에 다운로드가 먼저 이루어지면 안되므로!
+            url : '/excel',
+            type : 'get',
+            success : function(data) { // json data가 넘어온다
+               // json -> 자바스크립트 배열 -> sheetjs 자료구조로 바꾼 뒤 다운로드
+               $(data).each(function(index, item) {
+                  let row = [];
+                  row.push(item.name);
+                  row.push(item.age);
+                  arr.push(row);
+                  // [{name:'루피',age:17}, {name:'나미',age19}]
+               });
+            }
+         });
+         
+         // 1) SheetJS api를 사용하여 엑셀 파일 생성
+         let book = XLSX.utils.book_new(); 
+         // 2) 엑셀 파일 안에 빈 시트를 생성(시트의 이름 : one)
+         book.SheetNames.push('one');
+         // 3) 엑셀의 시트구조의 파일을 생성하여 자바스크립트 배열을 저장
+         let sheet = XLSX.utils.aoa_to_sheet(arr);
+         // 4) 빈 시트안에 시트구조의 파일을 저장
+         book.Sheets['one'] = sheet;
+         // 5) 파일을 다운로드 하기 위해 엑셀 파일을 바이너리 타입으로... (boot -> 기계어파일로)
+         let source = XLSX.write(book, {bookType:'xlsx', type:'binary'});
+         // 6) 파일을 다운로드
+         let buf = new ArrayBuffer(source.length); // 6-1) 소스의 크기만큼 빈 스트림을 생성
+         let buf2 = new Uint8Array(buf); // 6-2) 8비트(1바이트) 배열로 랩핑
+         // 6-3) ??
+         for(let i = 0; i < source.length; i++) {
+            buf2[i] = source.charCodeAt(i) & 0xFF; // ??
+         }
+         // 7) FileSaver savaAs api의 함수를 사용하여
+         let b = new Blob([buf], { type: "application/octet-stream" });
+         saveAs(b, "test.xlsx");
+               
+      });
+   </script>
+</body>
+</html>-->
+

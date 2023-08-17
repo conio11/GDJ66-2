@@ -2,18 +2,24 @@ package com.goodee.myJoinTree.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.goodee.myJoinTree.service.EmpInfoService;
 import com.goodee.myJoinTree.service.LoginService;
 import com.goodee.myJoinTree.vo.AccountList;
+import com.goodee.myJoinTree.vo.EmpInfo;
+import com.goodee.myJoinTree.vo.EmpInfoImg;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,6 +59,7 @@ public class EmpInfoController {
 		
 		if (row == 1) {
 			msg = URLEncoder.encode("비밀번호가 변경되었습니다. 다시 로그인 후 이용 가능합니다.", "UTF-8");
+			session.setAttribute("pwChangeMessage", msg); // 메시지를 세션에 저장
 			
 			return "redirect:/logout?msg=" + msg;
 		} else {
@@ -62,7 +69,22 @@ public class EmpInfoController {
 	}
 	
 	@GetMapping("/empInfo/empInfo")
-	public String empInfo() {
+	public String empInfo(HttpSession session, Model model) {
+		AccountList loginAccount = (AccountList) session.getAttribute("loginAccount");
+		
+		int empNo = loginAccount.getEmpNo();
+		
+		Map<String, Object> map = empInfoService.getEmpOne(empNo);
+		
+		log.debug(CYAN + map + " <-- map(EmpInfoController-empInfo)" + RESET);
+		
+		// EmpInfo empInfo = (EmpInfo)map.get("empInfo");
+		// EmpInfoImg empInfoImg = (EmpInfoImg)map.get("empInfoImg");
+		
+		
+		model.addAttribute("empInfo", map);
+		// model.addAttribute("empInfoImg", empInfoImg);
+		
 	    return "/empInfo/empInfo"; // 나의 정보 페이지로 이동
 	}
 	
@@ -81,7 +103,8 @@ public class EmpInfoController {
 		log.debug(CYAN + row + " <-- row(EmpInfoController-checkPw)" + RESET);
 		
 		if (row == 1) { // 비밀번호 일치
-			return "/empInfo/modifyEmp";
+			
+			return "redirect:/empInfo/modifyEmp";
 		} else {
 			msg = URLEncoder.encode("비밀번호가 일치하지 않습니다.", "UTF-8");
 			return "redirect:/empInfo/checkPw?msg=" + msg;
@@ -89,7 +112,36 @@ public class EmpInfoController {
 	}
 	
 	@GetMapping("/empInfo/modifyEmp")
-	public String modifyEmp() {
-	    return "/empInfo/checkPw"; // 나의 정보 수정 페이지로 이동
+	public String modifyEmp(HttpSession session, Model model) {
+	    AccountList loginAccount = (AccountList) session.getAttribute("loginAccount");
+	    int empNo = loginAccount.getEmpNo();
+	    
+	    Map<String, Object> map = empInfoService.getEmpOne(empNo);
+	    
+		log.debug(CYAN + map + " <-- map(EmpInfoController-modifyEmp)" + RESET);
+	    
+	    EmpInfo empInfo = (EmpInfo) map.get("empInfo");
+	    EmpInfoImg empInfoImg = (EmpInfoImg) map.get("empInfoImg");
+	    
+	    // model.addAttribute("empInfo", empInfo);
+	    // model.addAttribute("empInfoImg", empInfoImg);
+	    
+		// EmpInfo empInfo = (EmpInfo)map.get("empInfo");
+		// EmpInfoImg empInfoImg = (EmpInfoImg)map.get("empInfoImg");
+		
+		
+		model.addAttribute("empInfo", map);
+		// model.addAttribute("empInfoImg", empInfoImg);
+	    
+	    
+	    
+	    return "/empInfo/modifyEmp"; // 나의 정보 수정 페이지로 이동
 	}
+	
+	@PostMapping("/empInfo/modifyEmp")
+	public String modifyEmp(HttpSession session) {
+		return "";
+	}
+	
+	
 }

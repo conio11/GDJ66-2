@@ -36,7 +36,7 @@
 			<table border="1">
 				<tr>
 					<th>localName</th>
-					<td><input type="text" name="localName"></td>
+					<td><input type="text" name="localName" required></td>
 				</tr>
 				<tr>
 <%-- 					<th>localName</th>
@@ -51,15 +51,15 @@
 			    </tr> --%>
 				<tr>
 					<th>boardTitle</th>
-					<td><input type="text" name="boardTitle"></td>
+					<td><input type="text" name="boardTitle" required></td>
 				</tr>
 				<tr>
 					<th>boardContent</th>
-					<td><textarea cols="50" rows="5" name="boardContent"></textarea></td>
+					<td><textarea cols="50" rows="5" name="boardContent" required></textarea></td>
 				</tr>
 				<tr>
 					<th>memberId</th>
-					<td><input type="text" name="memberId"></td>
+					<td><input type="text" name="memberId" required></td>
 				</tr>
 				<tr>
 					<th>첨부파일</th>

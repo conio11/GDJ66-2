@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service // transaction 어노테이션과 직접 관련 X
 @Transactional
 public class BoardService {
-	static final String CYAN = "\u001B[36m";
+	static final String CYAN = "\u001B[46m";
 	static final String RESET = "\u001B[0m";
 	
 	@Autowired
@@ -37,9 +37,7 @@ public class BoardService {
 	public List<Map<String, Object>> getLocalNameList() {
 		return boardMapper.selectLocalNameList();
 	}
-	
-	
-	
+
 	public int addBoard(Board board, String path) {
 		int row = boardMapper.insertBoard(board);
 		
@@ -89,24 +87,24 @@ public class BoardService {
 	}
 	
 	public int removeBoard(Board board, String path) {
-		// 첨부파일 삭제
-		List<Boardfile> boardfileList = boardfileMapper.selectBoardfile(board.getBoardNo());
-		
-		for (Boardfile bf : boardfileList) {
-			File f = new File(path + bf.getSaveFilename());
-			// 파일이 있을 경우 삭제
-			if (f.exists()) {
-				f.delete();
-				log.debug(CYAN + "파일 삭제(BoardService-removeBoard)" + RESET);
-			}
-		}
 		int boardfileCnt = boardfileMapper.selectBoardfileCnt(board.getBoardNo());
 		int row = boardfileMapper.removeBoardfile(board.getBoardNo());
 		log.debug(CYAN + row + " <-- row(BoardService-removeBoard)" + RESET);
 		if (boardfileCnt == row) {
 			row = boardMapper.removeBoard(board);
+			
+			// 첨부파일 삭제
+			List<Boardfile> boardfileList = boardfileMapper.selectBoardfile(board.getBoardNo());
+			
+			for (Boardfile bf : boardfileList) {
+				File f = new File(path + bf.getSaveFilename());
+				// 파일이 있을 경우 삭제
+				if (f.exists()) {
+					f.delete();
+					log.debug(CYAN + "파일 삭제(BoardService-removeBoard)" + RESET);
+				}
+			}
 		}
-		
 		return row;
 	}
 	
@@ -116,18 +114,32 @@ public class BoardService {
 		
 		return row;
 	}
-	
-	
+
 	public int modifyBoard(Board board, String path) {
 		int row = boardMapper.modifyBoard(board);
 		log.debug(CYAN + row + " <-- row(BoardService-modifyBoard)" + RESET);
 		if (row == 1) { // board가 수정되었을 경우
 			int boardNo = board.getBoardNo();
+			log.debug(CYAN + boardNo + " <-- boardNo(BoardService-modifyBoard)" + RESET);
 			List<MultipartFile> fileList = board.getMultipartFile();
 			log.debug(CYAN + fileList.size() + RESET); // 첨부파일 개수 확인
 			// 첨부파일이 한 개라도 존재할 경우
 			if (fileList != null && fileList.size() > 0) {
-				for (MultipartFile mf : fileList) {
+				// 저장된 파일을 삭제
+				List<Boardfile> boardfileList = boardfileMapper.selectBoardfile(board.getBoardNo());
+				if (boardfileList != null && boardfileList.size() > 0) {
+					for(Boardfile bf : boardfileList) {
+						File f = new File(path + bf.getSaveFilename());
+						if(f.exists()) {
+							f.delete();
+						}
+					}
+					
+					// boardfile 테이블에서 파일을 삭제
+					boardfileMapper.removeBoardfile(board.getBoardNo());
+				}
+				
+				for (MultipartFile mf : fileList) { // 첨부된 파일의 개수만큼 반복
 					if (mf.getSize() > 0) {
 						// 확장자
 						String ext = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf("."));
@@ -137,7 +149,7 @@ public class BoardService {
 						Boardfile bf = new Boardfile();
 						bf.setBoardNo(boardNo); // 부모 키 값
 						bf.setOriginFilename(mf.getOriginalFilename()); // 원본 파일 이름
-						bf.setOriginFilename(newFilename); // 저장 파일 이름
+						bf.setSaveFilename(newFilename); // 저장 파일 이름
 						bf.setFiletype(mf.getContentType());
 						bf.setFilesize(mf.getSize());
 						
@@ -155,8 +167,6 @@ public class BoardService {
 							// 트랜잭션 작동을 위해 예외(try-catch를 강요하지 않는 예외 -> ex: RuntimeException) 발생 필요
 							throw new RuntimeException();
 						}
-						
-						
 					}
 				}
 			}

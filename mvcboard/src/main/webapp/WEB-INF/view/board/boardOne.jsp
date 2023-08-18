@@ -51,6 +51,5 @@
 		</table>
 		<a href="/board/modifyBoard?boardNo=${board.boardNo}">수정</a>
 		<a href="/board/removeBoard?boardNo=${board.boardNo}">삭제</a>
-	
 	</body>
 </html>

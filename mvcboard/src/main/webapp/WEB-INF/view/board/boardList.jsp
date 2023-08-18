@@ -19,6 +19,7 @@
 		
 		<table border="1">
 			<tr>
+				<th>boardNo</th>
 				<th>localName</th>
 				<th>boardTitle</th>
 				<th>memberId</th>
@@ -26,6 +27,7 @@
 			</tr>
 			<c:forEach var="b" items="${boardList}">
 				<tr>
+					<td>${b.boardNo}</td>
 					<td>${b.localName}</td>
 					<td>
 						<a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a>

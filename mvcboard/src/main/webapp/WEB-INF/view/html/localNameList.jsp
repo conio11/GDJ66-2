@@ -6,7 +6,7 @@
 		<meta charset="UTF-8">
 		<title>localNameList</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script> <!--jQuery CDN  -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>	<!--  -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>	<!-- js 기반 차트 라이브러리 -->
 		<script>
 			$(document).ready(function() {
 				// document 코드보다 아래에 위치, ajax 보다 위에
@@ -16,9 +16,9 @@
 				// 동기 호출로 x, y값 세팅
 				$.ajax({
 					async : false, // true(비동기: 기본값), false(동기)	
-					url: '/rest/localNameList',
+					url: '/rest/localNameList', // get 요청을 보낼 주소
 					type: 'get',
-					success: function(model) { // model: list
+					success: function(model) { // ajax 요청이 성공했을 때 호출되는 콜백 함수 -> 서버로부터 받아온 데이터가 model 매개변수로 전달 // model: list
 						// Backend Model -> Frontend 모델로 변경
 						// model -> {'model':[{localName: '부산', cnt: 10}, 
 						//            			{localName: '서울', cnt: 20}, ..]} (객체의 배열)
@@ -72,9 +72,6 @@
 				</tr>
 			</thead>
 			<tbody id="target">
-				<tr>
-				
-				</tr>
 			</tbody>
 		</table>
 		<canvas id="target2" style="width:100%; max-width:700px"></canvas>	

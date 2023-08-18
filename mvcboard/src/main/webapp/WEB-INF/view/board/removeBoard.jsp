@@ -7,18 +7,12 @@
 		<title>removeBoard</title>
 	</head>
 	<body>
+		<a href="/board/boardOne?boardNo=${board.boardNo}">이전</a>
 		${board}
 		<h1>게시글 삭제</h1>
 			<form method="post" action="/board/removeBoard">
-			<input type="hidden" name="boardTitle" value="${board.boardTitle}">
-			<input type="hidden" name="boardContent" value="${board.boardContent}">
-			<input type="hidden" name="localName" value="${board.localName}">
-			<%-- <input type="hidden" name="memberId" value="${board.memberId}"> --%>
+			<input type="hidden" name="boardNo" value="${board.boardNo}">
 			<table border="1">
-				<tr>
-					<th>boardTitle</th>
-					<td>${board.boardTitle}</td>
-				</tr>
 				<tr>
 					<th>boardTitle</th>
 					<td>${board.boardTitle}</td>

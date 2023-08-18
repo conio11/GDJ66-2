@@ -38,15 +38,11 @@ public class BoardController {
 	// 게시글 추가 폼 - localNameList 생성
 	@GetMapping("/board/addBoard")
 	public String addBoard(Model model) { 
-		// List<Map<String, Object>> localNameList = boardService.getLocalNameList();
+		List<Map<String, Object>> localNameList = boardService.getLocalNameList();
+		model.addAttribute("localNameList", localNameList);
 		return "/board/addBoard";
 	}
 
-	/*
-	 * @PostMapping("/board/addBoard") public String addBoard(Board board) {
-	 * boardService.addBoard(board); // String strRow = row + ""; //
-	 * log.debug("\u001B[32m" + strRow); return "redirect:/board/boardList"; }
-	 */
 
 	@PostMapping("/board/addBoard")
 	public String addBoard(HttpServletRequest request, Board board) { // 매개값 request 객체를 받음 -> requst api 직접 호출
@@ -58,30 +54,40 @@ public class BoardController {
 	}
 
 	@GetMapping("/board/modifyBoard")
-	public String modifyBoard(Model model, int boardNo) {
-		// Board board = boardService.selectBoardOne(boardNo);
+	public String modifyBoard(Model model, @RequestParam(name="boardNo", defaultValue = "0") int boardNo, @RequestParam(name="boardfileNo", defaultValue = "0") int boardfileNo) {
+		//Board board = boardService.selectBoardOne(boardNo);
+		// Map<String, Object> boardList = boardService.getBoardOne(boardfileNo);
 		
-		Map<String, Object> map = boardService.selectBoardOne(boardNo);
+		Map<String, Object> map = boardService.getBoardOne(boardNo);
+		Board board = (Board) map.get("board");
+		List<Map<String, Object>> localNameList = boardService.getLocalNameList();
+		// Map<String, Object> map = boardService.selectBoardOne(boardNo);
 		
-		Board board = (Board)map.get("board");
+		// 파일 번호가 넘어오면 삭제
+		if (boardfileNo > 0) {
+			boardService.removeBoardfileOne(boardfileNo);
+		}
+		List<Boardfile> fileList = boardService.getBoardfile(boardfileNo);
 		
-
 		model.addAttribute("board", board);
+		model.addAttribute("localNameList", localNameList);
+		model.addAttribute("fileList", fileList);
 
 		return "/board/modifyBoard";
 	}
 
 	@PostMapping("/board/modifyBoard")
-	public String modifyBoard(Board board) {
-		int row = boardService.modifyBoard(board);
+	public String modifyBoard(HttpServletRequest request, Board board) {
+		String path = request.getServletContext().getRealPath("/upload/");
+		int row = boardService.modifyBoard(board, path);
 		System.out.println(row + "<-- row(modifyBoard)");
 		log.debug("\u001B[31m" + "row : " + row + "\u001B[0m");
-		return "redirect:/board/boardList";
+		return "redirect:/board/boardOne?boardNo=" + board.getBoardNo();
 	}
 
 	@GetMapping("/board/removeBoard")
 	public String removeBoard(Model model, int boardNo) {
-		Map<String, Object> map = boardService.selectBoardOne(boardNo);
+		Map<String, Object> map = boardService.getBoardOne(boardNo);
 		
 		Board board = (Board)map.get("board");
 		// Board board = boardService.selectBoardOne(boardNo);
@@ -92,8 +98,9 @@ public class BoardController {
 	}
 
 	@PostMapping("/board/removeBoard")
-	public String removeBoard(Board board) {
-		int row = boardService.removeBoard(board);
+	public String removeBoard(HttpServletRequest request, Board board) {
+		String path = request.getServletContext().getRealPath("/upload/");
+		int row = boardService.removeBoard(board, path);
 		System.out.println(row + " <-- row(removeBoard)");
 		log.debug("\u001B[31m" + "row : " + row + "\u001B[0m");
 		return "redirect:/board/boardList";
@@ -101,7 +108,7 @@ public class BoardController {
 
 	@GetMapping("/board/boardOne")
 	public String boardOne(Model model, int boardNo) {
-		Map<String, Object> map = boardService.selectBoardOne(boardNo);
+		Map<String, Object> map = boardService.getBoardOne(boardNo);
 		
 		Board board = (Board)map.get("board");
 		List<Boardfile> boardfiles = (List<Boardfile>)map.get("boardfiles");

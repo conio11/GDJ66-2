@@ -198,16 +198,13 @@
 			현재 사용자 : ${empName}
 			<%-- 현재 로그인 아이디: ${loginAccount.empNo} --%>
 		</div>
-		
-		<div>
-			사원이미지 -> 
-		</div>
-		
+				
 		<table border="1">
 			<tr>
 				<td>사원이미지</td>
 				<td>
-					${empInfo.empSaveImgName}
+					<img src="${pageContext.request.contextPath}/empImg/${empInfo.empSaveImgName}" alt="employee image"><br>
+					<%-- ${empInfo.empSaveImgName}.${empInfo.empFiletype} --%>
 					<%-- <img src="이미지파일경로/${empInfo.empSaveImgName}" alt="Employee Image"> --%>
 				</td>
 			</tr>
@@ -249,7 +246,7 @@
 			</tr>
 			<tr>
 				<td>정보수정일</td>
-				<td>${empInfo.updatedate}</td>
+				<td>${empInfo.updatedate.toString().substring(0, 19)}</td> <!--timestamp이므로 String 변환 후 자르기  -->
 			</tr>
 
 		</table>

@@ -18,7 +18,7 @@
 			dc.code_name dept, 
 			e.emp_name empName, e.emp_address empAddress, e.emp_phone empPhone, 
 			e.emp_jumin_no empJuminNo, e.emp_extension_no empExtensionNo, e.emp_hire_date empHireDate, e.updatedate, 
-			ei.emp_save_img_name empSaveImgName
+			COALESCE(ei.emp_save_img_name, '이미지 없음') empSaveImgName, ei.emp_filetype empFiletype
 		FROM emp_info e LEFT OUTER JOIN emp_info_img ei
 		ON e.emp_no = ei.emp_no 
 		INNER JOIN common_code dc
@@ -41,7 +41,9 @@
 		SET emp_name = #{empName}, 
 			emp_address = #{empAddress}, 
 			emp_jumin_no = #{empJuminNo},
-			emp_phone = #{empPhone}
+			emp_phone = #{empPhone}, 
+			updatedate = NOW(), 
+			update_id = #{empNo}
 		WHERE emp_no = #{empNo}
 	</update>
 

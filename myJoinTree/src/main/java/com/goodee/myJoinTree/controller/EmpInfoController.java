@@ -120,8 +120,8 @@ public class EmpInfoController {
 	    
 		log.debug(CYAN + map + " <-- map(EmpInfoController-modifyEmp)" + RESET);
 	    
-	    EmpInfo empInfo = (EmpInfo) map.get("empInfo");
-	    EmpInfoImg empInfoImg = (EmpInfoImg) map.get("empInfoImg");
+	    // EmpInfo empInfo = (EmpInfo) map.get("empInfo");
+	    // EmpInfoImg empInfoImg = (EmpInfoImg) map.get("empInfoImg");
 	    
 	    // model.addAttribute("empInfo", empInfo);
 	    // model.addAttribute("empInfoImg", empInfoImg);
@@ -133,14 +133,31 @@ public class EmpInfoController {
 		model.addAttribute("empInfo", map);
 		// model.addAttribute("empInfoImg", empInfoImg);
 	    
-	    
-	    
 	    return "/empInfo/modifyEmp"; // 나의 정보 수정 페이지로 이동
 	}
 	
 	@PostMapping("/empInfo/modifyEmp")
-	public String modifyEmp(HttpSession session) {
-		return "";
+	public String modifyEmp(HttpSession session, Model model, 
+					@RequestParam Map<String, Object> empInfo) throws UnsupportedEncodingException {
+		AccountList loginAccount = (AccountList) session.getAttribute("loginAccount");
+		
+		int empNo = loginAccount.getEmpNo();
+		
+		empInfo.put("empNo", empNo);
+		
+		int row = empInfoService.modifyEmp(empInfo);
+		log.debug(CYAN + row + " <-- row(EmpInfoController-modifyEmp)" + RESET);
+		
+		if (row == 1) {
+			msg = URLEncoder.encode("회원정보가 변경되었습니다. 다시 로그인 후 이용 가능합니다.", "UTF-8");
+			session.setAttribute("empChangeMessage", msg); // 메시지를 세션에 저장
+			
+			return "redirect:/logout?msg=" + msg;
+		} else {
+			msg = URLEncoder.encode("회원정보 변경 실패. 관리자에게 문의해주세요.", "UTF-8");
+			return "redirect:/empInfo/modifyEmp?msg=" + msg;
+		}
+		
 	}
 	
 	

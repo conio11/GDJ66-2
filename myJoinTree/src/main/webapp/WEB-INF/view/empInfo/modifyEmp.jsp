@@ -9,142 +9,260 @@
 		<title>modifyEmp</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 		<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-	<script>
-		// 입력폼 유효성 검사
-		// 수정하기
-		$(document).ready(function(){
-			const urlParams = new URL(location.href).searchParams;
-			const msg = urlParams.get("msg");
-				if (msg != null) {
-					alert(msg);
-				}
-/* 			
-			$('#btn').click(function(){
-				if($('#sample6_postcode').val() == ''){
-					alert('우편번호를 입력해주세요');
-				} else if($('#sample6_address').val() == ''){
-					alert('주소를 입력해주세요');
-				} else if($('#sample6_detailAddress').val() == ''){
-					alert('상세주소를 입력해주세요');
-				} else {
-				}
-			}); */
+		<script>
+			// 입력폼 유효성 검사
+			// 수정하기
+			$(document).ready(function(){
+				const urlParams = new URL(location.href).searchParams;
+				const msg = urlParams.get("msg");
+					if (msg != null) {
+						alert(msg);
+					}
+
+				
+				// 사진 등록 버튼 클릭 시 팝업 창 열기
+				$('#uploadImgBtn').click(function() {
+					console.log("사진 등록 버튼이 클릭되었습니다."); 
+				    openUploadImgPopup();
+				});
 			
-			// 사진 등록 및 변경 버튼 클릭 시 파일 선택 동작 실행
-			$('#uploadImgBtn, #modifyImgBtn').click(function() {
-				$('#newImageInput').click();
-			});
+				let uploadPopup; // 팝업 창을 함수 외부에 선언
+				// 사진 등록 팝업 열기 함수
+				function openUploadImgPopup() {
+					uploadPopup = window.open("", "UploadImgPopup", "width=500,height=400,scrollbars=yes,resizable=yes");
+				    
+				    // 팝업 내용 작성
+				    var uploadPopupContent = "<h2>사진 등록</h2>" +
+				    				   "<p>파일 크기는 3MB 이하로 제한됩니다.</p>" +
+				                       "<form id='uploadImgForm' enctype='multipart/form-data'>" +
+				                       "   <input type='file' name='uploadImg' accept='image/jpg, image/jpeg, image/png'>" +
+				                       "   <img id='previewImg' src='' alt='Image Preview' style='max-width: 300px; max-height: 300px; display: none;'>" +
+				                       "   <button type='button' onclick='uploadImage()''>등록</button>" +
+				                       "</form>";
+				    
+                    uploadPopup.document.write(uploadPopupContent);
+				    uploadPopup.document.close();
+				}
+				
+				// 파일 선택 시 미리보기 (사진 등록)
+				$('#uploadImg').change(function() {
+				    var input = this;
+				    if (input.files && input.files[0]) {
+				        var reader = new FileReader();
+				        reader.onload = function(e) {
+				        	console.log("미리보기 이미지가 업데이트되었습니다."); // 디버그 메시지
+				            // 미리보기 이미지 업데이트
+				            $('#previewImg').attr('src', e.target.result).show();
+				        };
+				        reader.readAsDataURL(input.files[0]);
+				    }
+				});
+				
+				// 사진 등록 처리 함수
+				function uploadImage() {
+					 console.log("사진 업로드 함수가 호출되었습니다."); // 디버그 메시지
+				    // var formData = new FormData(popup.document.getElementById('uploadImgForm'));
+				    
+				    var formData = new FormData();
+				    var fileInput = document.getElementById('uploadImg');
+				    formData.append('newImgFile', fileInput.files[0]);
+				    
+				    // AJAX나 다른 적절한 방법으로 서버에 폼 데이터를 전송합니다
+				    // 서버의 응답을 필요한대로 처리합니다
+				    
+				    // AJAX 요청
+				    $.ajax({
+				    	url: '/myJoinTree/empInfo/modifyEmp/uploadEmpImg',
+				    	type: 'post', 
+				    	data: formData, 
+				    	processData: false, // false로 선언 시 formData를 string으로 변환하지 않음
+				    	contentType: false, // false로 선언 시 content-type 헤더가 multipart/form-data로 전송되게 함
+				    	success: function(response) {
+				    		if (response === "success") {
+				    			alert("사진 등록이 완료되었습니다.");
+				    			location.reload(); // 현재 메인 페이지 새로고침(팝업 X)
+				    		} else {
+				    			alert("사진 등록 중 오류가 발생했습니다.");
+				    		}
+				    	},
+				    	error: function(error) {
+				    		alert("서버 오류 발생");
+				    	}
+				    	
+				    });
+				    
+				    // 이미지 업로드 후 팝업 창을 닫습니다
+				    uploadPopup.close();
+				}
+				
+				// 사진 변경 버튼 클릭 시 팝업 창 열기
+				$('#modifyImgBtn').click(function() {
+					 console.log("정보 수정 버튼이 클릭되었습니다."); // 디버그 메시지
+				    openModifyImgPopup();
+				});
+				
+				let modifyPopup;
+				
+			  	// 사진 변경 팝업 열기 함수
+			    function openModifyImgPopup() {
+			    	modifyPopup = window.open("", "ModifyImgPopup", "width=500,height=400,scrollbars=yes,resizable=yes");
 			
-			// 파일 선택 시 미리보기
-			$('#newImageInput').change(function() {
-				var input = this;
-				if (input.files && input.files[0]) {
-		            var reader = new FileReader();
-		            reader.onload = function(e) {
-		                if ($(input).attr('id') === 'newImageInput') {
-		                    // 이미지 변경
-		                    $('#newImgPreview').attr('src', e.target.result).show();
-		                } else {
-		                    // 이미지 등록
-		                    $('#imgPreview').attr('src', e.target.result).show();
-		                }
-		            };
-		            reader.readAsDataURL(input.files[0]);
-		        }
-			});
-		
-			// 이름 칸은 문자만 입력 허용
-			$("#empName").on("keypress", function(event) {
-			    // ASCII 코드 값이 숫자 범위(48~57)인 경우 입력 막음
-			    if (event.which >= 48 && event.which <= 57) {
-			        event.preventDefault();
+			        // 팝업 내용 작성
+			        var modifypopupContent = "<h2>사진 변경</h2>" +
+			        				   "<p>파일 크기는 3MB 이하로 제한됩니다.</p>" +
+			                           "<form id='modifyImgForm' enctype='multipart/form-data'>" +
+			                           "   <img id='modifyPreviewImage' src='' alt='Image Preview' style='max-width: 300px; max-height: 300px; display: none;'>" +
+			                           "   <input type='file' name='modifyImage' accept='image/jpg, image/jpeg, image/png'>" +
+			                           "   <input type='button' value='등록' onclick='uploadImgModify()'>" +
+			                           "</form>";
+			
+                    modifyPopup.document.write(modifypopupContent);
+                    modifyPopup.document.close();
+				}
+			  	
+			 	// 파일 선택 시 미리보기 (사진 변경)
+			    $('#newImageInput').change(function() {
+			        var input = this;
+			        if (input.files && input.files[0]) {
+			            var reader = new FileReader();
+			            reader.onload = function(e) {
+			                // 미리보기 이미지 업데이트
+			                $('#modifyPreviewImage').attr('src', e.target.result).show();
+			            };
+			            reader.readAsDataURL(input.files[0]);
+			        }
+			    });
+				
+			  	
+			    // 사진 변경 업로드 처리 함수
+			    function uploadImgModify() {
+			        var formData = new FormData(popup.document.getElementById('modifyImgForm'));
+			        
+			        // AJAX 요청
+			        $.ajax({
+			        	url: '/myJoinTree/empInfo/modifyEmp/modifyEmpImg',
+			        	type: 'POST',
+			        	data: formData,
+			        	processData: false,
+			        	contentType: false,
+			        	success: function(response) {
+			        		if (response === "success") {
+			        			alert("사진 변경이 완료되었습니다.");
+			        		} else {
+			        			alert("사진 변경 중 오류가 발생했습니다.");
+			        		}
+			        		
+			        	},
+			        	error: function(error) {
+			        		alert("서버 오류 발생");
+			        	}
+			        });
+			        
+			        // 이미지 업로드 후 팝업 창을 닫기
+			        modifyPopup.close();
+			        
+		            // 이미지 미리보기 업데이트
+		            var modifyPreviewImage = $('#modifyPreviewImage');
+		            modifyPreviewImage.attr('src', ''); // 기존 이미지 초기화
+		            modifyPreviewImage.hide(); // 미리보기 숨김
+
+		            // empInfo/empInfo 페이지 새로고침
+		            location.reload();
 			    }
+				
+				// 이름 칸은 문자만 입력 허용
+				$("#empName").on("keypress", function(event) {
+				    // ASCII 코드 값이 숫자 범위(48~57)인 경우 입력 막음
+				    if (event.which >= 48 && event.which <= 57) {
+				        event.preventDefault();
+				    }
+				});
+				
+				// 주민번호, 연락처 칸은 숫자만 입력 허용
+		       	$("[id^='empJuminNo'], [id^='empPhone']").on("keypress", function(event) {
+		       		if ((event.which < 48 || event.which > 57) && event.which !== 8) {
+		                return false;
+		            }
+		        });
+				
+				// 정보 수정 버튼 클릭 시 
+				$("#modifyEmpBtn").click(function() {
+					if ($("#empName").val() == "") {
+						alert("이름을 입력해주세요.");
+						$("#empName").focus();
+					} else if ($("#sample6_postcode").val() == "") {
+						alert("우편번호를 입력해주세요.");
+						$("#sample6_postcode").focus();
+					} else if ($("#sample6_address").val() == "") {
+						alert("주소를 입력해주세요.");
+						$("#sample6_address").focus();
+					} else if ($("#sample6_detailAddress").val() == "") {
+						alert("상세주소를 입력해주세요.");
+						$("#sample6_detailAddress").focus();
+					} else if ($("#sample6_extraAddress").val() == "") {
+						alert("참고항목을 입력해주세요.");
+						$("#sample6_extraAddress").focus();
+					} else if ($("#empJuminNo1").val() == "") {
+						alert("주민등록번호 앞자리를 입력해주세요.");
+						$("#empJuminNo1").focus();
+					} else if ($("#empJuminNo2").val() == "") {
+						alert("주민등록번호 뒷자리를 입력해주세요.");
+						$("#empJuminNo2").focus();
+					} else if ($("#empPhone1").val() == "") {
+						alert("연락처 첫 번째 칸을 입력해주세요.");
+						$("#empPhone1").focus();
+					} else if ($("#empPhone2").val() == "") {
+						alert("연락처 두 번째 칸을 입력해주세요.");
+						$("#empPhone2").focus();
+					} else if ($("#empPhone3").val() == "") {
+						alert("연락처 세 번째 칸을 입력해주세요.");
+						$("#empPhone3").focus();
+					} else {
+						$("#modifyEmp").submit();
+					}
+				});
+				
 			});
 			
-			// 주민번호, 연락처 칸은 숫자만 입력 허용
-	       	$("[id^='empJuminNo'], [id^='empPhone']").on("keypress", function(event) {
-	       		if ((event.which < 48 || event.which > 57) && event.which !== 8) {
-	                return false;
-	            }
-	        });
-			
-			// 정보 수정 버튼 클릭 시 
-			$("#modifyEmpBtn").click(function() {
-				if ($("#empName").val() == "") {
-					alert("이름을 입력해주세요.");
-					$("#empName").focus();
-				} else if ($("#sample6_postcode").val() == "") {
-					alert("우편번호를 입력해주세요.");
-					$("#sample6_postcode").focus();
-				} else if ($("#sample6_address").val() == "") {
-					alert("주소를 입력해주세요.");
-					$("#sample6_address").focus();
-				} else if ($("#sample6_detailAddress").val() == "") {
-					alert("상세주소를 입력해주세요.");
-					$("#sample6_detailAddress").focus();
-				} else if ($("#sample6_extraAddress").val() == "") {
-					alert("참고항목을 입력해주세요.");
-					$("#sample6_extraAddress").focus();
-				} else if ($("#empJuminNo1").val() == "") {
-					alert("주민등록번호 앞자리를 입력해주세요.");
-					$("#empJuminNo1").focus();
-				} else if ($("#empJuminNo2").val() == "") {
-					alert("주민등록번호 뒷자리를 입력해주세요.");
-					$("#empJuminNo2").focus();
-				} else if ($("#empPhone1").val() == "") {
-					alert("연락처 첫 번째 칸을 입력해주세요.");
-					$("#empPhone1").focus();
-				} else if ($("#empPhone2").val() == "") {
-					alert("연락처 두 번째 칸을 입력해주세요.");
-					$("#empPhone2").focus();
-				} else if ($("#empPhone3").val() == "") {
-					alert("연락처 세 번째 칸을 입력해주세요.");
-					$("#empPhone3").focus();
-				} else {
-					$("#modifyEmp").submit();
-				}
-			});
-			
-		});
-		
-		// 주소API
-		var themeObj = {
-		 		   // searchBgColor: "#F24182", 
-		 		   // queryTextColor: "#FFFFFF" 
-		 		};
-	    function sample6_execDaumPostcode() {
-	        new daum.Postcode({
-	            oncomplete: function(data) {
-	                var addr = ''; 
-	                var extraAddr = ''; 
-	                if (data.userSelectedType === 'R') { 
-	                    addr = data.roadAddress;
-	                } else { 
-	                    addr = data.jibunAddress;
-	                }
-	                if(data.userSelectedType === 'R'){
-	                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
-	                        extraAddr += data.bname;
-	                    }
-	                    if(data.buildingName !== '' && data.apartment === 'Y'){
-	                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-	                    }
-	                    if(extraAddr !== ''){
-	                        extraAddr = ' (' + extraAddr + ')';
-	                    }
-	                    document.getElementById("sample6_extraAddress").value = extraAddr;
-	                
-	                } else {
-	                    document.getElementById("sample6_extraAddress").value = '';
-	                }
-	                document.getElementById('sample6_postcode').value = data.zonecode;
-	                document.getElementById("sample6_address").value = addr;
-	                document.getElementById("sample6_detailAddress").focus();
-	            },
-	            theme: themeObj
-	        }).open();
-	    }
-	</script>
+			// 주소API
+			var themeObj = {
+			 		   // searchBgColor: "#F24182", 
+			 		   // queryTextColor: "#FFFFFF" 
+			 		};
+		    function sample6_execDaumPostcode() {
+		        new daum.Postcode({
+		            oncomplete: function(data) {
+		                var addr = ''; 
+		                var extraAddr = ''; 
+		                if (data.userSelectedType === 'R') { 
+		                    addr = data.roadAddress;
+		                } else { 
+		                    addr = data.jibunAddress;
+		                }
+		                if (data.userSelectedType === 'R'){
+		                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+		                        extraAddr += data.bname;
+		                    }
+		                    if (data.buildingName !== '' && data.apartment === 'Y'){
+		                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+		                    }
+		                    if (extraAddr !== ''){
+		                        extraAddr = ' (' + extraAddr + ')';
+		                    }
+		                    document.getElementById("sample6_extraAddress").value = extraAddr;
+		                
+		                } else {
+		                    document.getElementById("sample6_extraAddress").value = '';
+		                }
+		                
+		                document.getElementById('sample6_postcode').value = data.zonecode;
+		                document.getElementById("sample6_address").value = addr;
+		                document.getElementById("sample6_detailAddress").focus();
+		            },
+		            theme: themeObj
+		        }).open();
+		    }
+		</script>
 	</head>
 	<body>
 		<h1>나의 정보 수정</h1>
@@ -160,16 +278,17 @@
 						
 						<img id="imgPreview" src="" alt="image preview" style="max-width: 300px; max-height: 300px; display: none;">
 						
-						<c:choose>
-							<c:when test="${empty empInfo.empSaveImgName or empInfo.empSaveImgName == '이미지 없움'}">
+						<!-- type="button" 없을 경우 액션 폼 제출되는 현상 주의  -->
+						<c:choose> 
+							<c:when test="${empty empInfo.empSaveImgName or empInfo.empSaveImgName == '이미지 없음'}">
 								<input type="file" id="newImageInput" accept="image/jpg, image/jpeg, image/png" style="display: none;"> &nbsp;
-								<button id="uploadImgBtn">사진 등록</button>
+								<button type="button" id="uploadImgBtn">사진 등록</button> 
 							</c:when>
 							<c:otherwise>
 								<img src="${pageContext.request.contextPath}/empImg/${empInfo.empSaveImgName}" alt="employee image"><br>
 								<span>변경 전 이미지</span><br>
 								<input type="file" id="newImageInput" accept="image/jpg, image/jpeg, image/png" style="display: none;"> &nbsp;
-								<button id="modifyImgBtn">사진 변경</button>	
+								<button type="button" id="modifyImgBtn">사진 변경</button>	
 							</c:otherwise>
 						</c:choose>
 					</td>

@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -202,10 +204,18 @@
 		<table border="1">
 			<tr>
 				<td>사원이미지</td>
+				
 				<td>
-					<img src="${pageContext.request.contextPath}/empImg/${empInfo.empSaveImgName}" alt="employee image"><br>
-					<%-- ${empInfo.empSaveImgName}.${empInfo.empFiletype} --%>
-					<%-- <img src="이미지파일경로/${empInfo.empSaveImgName}" alt="Employee Image"> --%>
+			    	<c:choose>
+				        <c:when test="${empty empInfo.empSaveImgName or empInfo.empSaveImgName == '이미지 없음'}">
+				            이미지 없음
+				        </c:when>
+				        <c:otherwise>
+				            <img src="${pageContext.request.contextPath}/empImg/${empInfo.empSaveImgName}" ><br>
+				            <%-- ${empInfo.empSaveImgName}.${empInfo.empFiletype} --%>
+				            <%-- <img src="이미지파일경로/${empInfo.empSaveImgName}" alt="Employee Image"> --%>
+				        </c:otherwise>
+				    </c:choose>
 				</td>
 			</tr>
 			<tr>

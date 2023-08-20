@@ -70,10 +70,12 @@ public class LoginController {
 		// 로그인 성공 시 
 		if (loginAccount != null) {
 			String empName = loginService.getEmpName(empNo);
+			String dept = loginService.getEmpDept(empNo);
 			log.debug(CYAN + empName + " <-- empName(LoginController)"+ RESET); // 디버그 로그
 			
 			session.setAttribute("loginAccount", loginAccount);
 			session.setAttribute("empName", empName);
+			session.setAttribute("dept", dept);
 			
 	        // 세션의 만료 시간 설정 (30분)
 	        int sessionTimeout = 30 * 60; // 30분 (초 단위)
@@ -171,6 +173,5 @@ public class LoginController {
 	    	
 	        return "error"; // 실패 시 오류 메시지 반환
 	    }
-		
 	}
 }

@@ -33,8 +33,21 @@
 				<a href="/myJoinTree/empInfo/empInfo">나의 정보</a>
 			</div>
 			<div>
+				<a href="/myJoinTree/community/freeCommList">자유 게시판</a>
+			</div>
+			<div>
+				<a href="/myJoinTree/community/anonymousCommList">익명 게시판</a>
+			</div>
+			<div>
+				<a href="/myJoinTree/community/secondhandCommList">중고장터 게시판</a>
+			</div>
+			<div>
+				<a href="/myJoinTree/community/lifeEventCommList">경조사 게시판</a>
+			</div>
+			<div>
 				<a href="/myJoinTree/logout">로그아웃</a>
 			</div>
 		</c:if>
+
 	</body>
 </html>

@@ -27,31 +27,8 @@
 			<a href="/myJoinTree/community/freeCommList/addFreeComm">게시글 작성</a>
 		</div>
 		
-		<!-- 상단고정 게시글  -->
-		<table border="1">
-			<tr>
-				<th>No</th>
-				<th>제목</th>
-				<th>작성자</th>
-				<th>작성일</th>
-				<th>조회수</th>
-			</tr>
-			<c:forEach var="p" items="${pinnedCommList}">
-				<tr>
-					<td>${p.boardNo}</td>
-					<td>
-						<a href="/myJoinTree/community/freeCommList/freeCommOne?boardNo=${p.boardNo}">${p.boardTitle}</a>
-					</td>
-					<td>
-						${p.empName}
-					</td>
-					<td>${p.createdate}</td>
-					<td>${p.boardCount}</td>
-				</tr>
-			</c:forEach>
-		</table>
 		
-		<!-- 일반 게시글 -->
+		
 		<table border="1">
 			<tr>
 				<th>No</th>
@@ -67,7 +44,7 @@
 						<a href="/myJoinTree/community/freeCommList/freeCommOne?boardNo=${c.boardNo}">${c.boardTitle}</a>
 					</td>
 					<td>
-						${c.empName}
+						${c.empNo}
 						<%-- <a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a> --%>
 					</td>
 					<td>${c.createdate}</td>

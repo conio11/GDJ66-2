@@ -9,23 +9,20 @@ import com.goodee.myJoinTree.vo.Board;
 
 @Mapper
 public interface CommunityMapper {
+	// 게시판 상단고정 게시글 목록
+	List<Board> selectPinnedCommList(String category);
+	
 	// 게시판 게시글 목록
 	List<Board> selectCommListByPage(Map<String, Object> map);
 	
 	// 전체 행 개수(카테고리별)
 	int selectCommCnt(String category);
 	
-	// 전체 행 개수(자유)
-	// int selectComm03Cnt();
+	// 게시글 조회수 증가
+	int increaseCommCount(int boardNo);
 	
-	// 전체 행 개수(익명)
-	// int selectComm04Cnt();
 	
-	// 전체 행 개수(중고장터)
-	// int selectComm05Cnt();
 	
-	// 전체 행 개수(경조사)
-	// int selectComm06Cnt();
 	
 	// 게시글 상세정보(자유)
 	
